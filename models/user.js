@@ -1,4 +1,4 @@
-module.exports = (sequelize , DataTypes, Sequelize) => {
+module.exports = (sequelize, DataTypes, Sequelize) => {
     const User = sequelize.define("users", {
         user_id: {
             type: Sequelize.UUID,
@@ -32,10 +32,9 @@ module.exports = (sequelize , DataTypes, Sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-    },{
+    }, {
         createdAt: "created_at",
         updatedAt: "last_logged_in"
     });
-
     return User;
 } 
