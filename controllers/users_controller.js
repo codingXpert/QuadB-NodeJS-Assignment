@@ -1,6 +1,7 @@
 const db = require("../config/mySql");
 const User = db.users;
 const jwt = require("jsonwebtoken");
+const verifyToken = require("../config/verify_token");
  
 //rendering the form
 module.exports.insert = (req, res) => {
@@ -114,27 +115,31 @@ module.exports.deleteUserDetail = async (req, res) => {
 
   // update user details
 module.exports.updateUserDetail = async (req, res) => {
-    console.log(req.file.filename);
     try {
-      const { user_id } = req.params;
-      const newDetails = req.body;
-      const user_image = req.file.filename;
-      const user = await User.findByPk(user_id);
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // update userDetails
-      await User.update(newDetails, {where: { user_id }});
-      const updatedUser = await User.findByPk(user_id ,{
-        attributes: { exclude: ["user_password"] }
-      });
-  
-      return res.status(200).json({
-        message: 'User details updated successfully',
-        user: updatedUser,
-      });
+        const checkToken = verifyToken.getToken(req);
+        if(checkToken){
+            const { user_id } = req.params;
+            const newDetails = req.body;
+            const user_image = req.file.filename;
+            const user = await User.findByPk(user_id);
+        
+            if (!user) {
+              return res.status(404).json({ message: 'User not found' });
+            }
+        
+            // update userDetails
+            await User.update(newDetails, {where: { user_id }});
+            const updatedUser = await User.findByPk(user_id ,{
+              attributes: { exclude: ["user_password"] }
+            });
+        
+            return res.status(200).json({
+              message: 'User details updated successfully',
+              user: updatedUser,
+            });
+        }else{
+            return res.status(401).json({ message: 'Unauthorized' })
+        } 
     } catch (error) {
       console.error('Error:', error);
       return res.status(500).json({ message: 'Internal server error' });
