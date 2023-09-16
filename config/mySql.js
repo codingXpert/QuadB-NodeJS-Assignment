@@ -23,10 +23,10 @@ db.sequelize = sequelize;
 
 
 
-db.users = require("../model/user")(sequelize, DataTypes, Sequelize);
+db.users = require("../models/user")(sequelize, DataTypes, Sequelize);
 
 //syncing the db
-db.sequelize.sync({force: true}) 
+db.sequelize.sync({force: false}) 
 .then(() => {
     console.log('yes re-sync done!');
 });

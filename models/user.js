@@ -32,17 +32,9 @@ module.exports = (sequelize , DataTypes, Sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-
-        created_at: {
-            type: DataTypes.DATE,
-            defaultValue: Sequelize.now
-        },
-
-        last_logged_in: {
-            type: DataTypes.DATE,
-            defaultValue: Sequelize.now
-        }
-
+    },{
+        createdAt: "created_at",
+        updatedAt: "last_logged_in"
     });
 
     return User;
