@@ -86,3 +86,31 @@ module.exports.deleteUserDetail = async (req, res) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
   };
+
+
+  // update user details
+module.exports.updateUserDetail = async (req, res) => {
+    console.log(req.file.filename);
+    try {
+      const { user_id } = req.params;
+      const newDetails = req.body;
+      const user_image = req.file.filename;
+      const user = await User.findByPk(user_id);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // update userDetails
+      await User.update(newDetails, {where: { user_id }});
+      const updatedUser = await User.findByPk(user_id);
+  
+      return res.status(200).json({
+        message: 'User details updated successfully',
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
