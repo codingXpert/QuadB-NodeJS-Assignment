@@ -1,5 +1,6 @@
 const db = require("../config/mySql");
 const User = db.users;
+const jwt = require("jsonwebtoken");
  
 //rendering the form
 module.exports.insert = (req, res) => {
@@ -36,6 +37,29 @@ module.exports.create =  async (req, res) => {
           }
     }
 };
+
+
+// Create a session by verifying user credentials and generating a JWT token
+module.exports.SignIn = async (req, res) => {
+    try {
+        const {user_email, user_password} = req.body
+      const user = await User.findOne({where: {user_email}});
+      if (!user || user.user_password !== user_password) {
+        return res.status(422).json({ message: "Invalid username/password" });
+      }
+      const token = jwt.sign(user.toJSON(), "mySecret", { expiresIn: "1d" });
+  
+      return res.status(200).json({
+        message: "Sign in successful. Here is your token. Please keep it safe!",
+        data: {
+          token: token,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  };
 
 
 // getUserDetails by id
@@ -103,7 +127,9 @@ module.exports.updateUserDetail = async (req, res) => {
   
       // update userDetails
       await User.update(newDetails, {where: { user_id }});
-      const updatedUser = await User.findByPk(user_id);
+      const updatedUser = await User.findByPk(user_id ,{
+        attributes: { exclude: ["user_password"] }
+      });
   
       return res.status(200).json({
         message: 'User details updated successfully',
